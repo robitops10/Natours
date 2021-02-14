@@ -5,6 +5,7 @@ const AppError = require('./utils/AppError');
 const globalErrorController = require('./controllers/globalErrorController');
 
 const tourRouter = require('./routes/tourRoute');
+const userRouter = require('./routes/userRoute');
 
 const app = express();
 
@@ -15,12 +16,17 @@ app.set('views', './views'); 													//
 app.set('view engine', 'pug'); 												// 
 
 
-if( process.env.NODE_ENV === 'development' ) {
-	app.use( morgan('dev') ); 													// View Request: Method 	URL 	ResponseTime(ms) 	ResponseSize(Byte)
-}
+// if( process.env.NODE_ENV === 'development' ) {
+// 	app.use( morgan('dev') ); 													// View Request: Method 	URL 	ResponseTime(ms) 	ResponseSize(Byte)
+// }
 
+app.use( (req, res, next) => {
+	// console.log( req.get('Content-Type') )
+	next();
+});
 
 app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
 
 
 

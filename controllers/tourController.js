@@ -4,9 +4,6 @@ const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/AppError');
 
 
-
-
-
 exports.topFiveCheapTours = ( req, res, next) => {
 	/*
 			-  we just add some property in 	'req.query' 	object

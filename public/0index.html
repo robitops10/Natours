@@ -7,5 +7,15 @@
 </head>
 <body>
 	index.html
+	<script>
+		const $ = f => document.querySelector(f);
+
+		const i = document.createElement('p');
+		i.id = 'name';
+		i.removeAttribute('id')
+		i.innerText = 'Hello';
+		$('body').append(i)
+
+	</script>
 </body>
 </html>

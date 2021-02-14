@@ -17,7 +17,7 @@ const schema = new mongoose.Schema({
 	},
 	difficulty: {
 		type: String,
-		// enum: ['easy', 'medium', 'hard'],
+		enum: ['easy', 'medium', 'difficult'],
 		required: true
 	}, 
 	ratingsAverage : {

@@ -1,35 +1,19 @@
+const slugify = require('slugify');
+const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
-// 	fn function is a callback function which have 3 argument, passed when it called
-// inner annonymous function have access thies 3 arguments, 
-// which passed to self called again, with that arguments
-const catchAsync = fn => {
-	return (req, res, next) => {
-		fn( req, res, next ).catch( err => console.log(err) )
-	}
-}
+// const data = Math.random() * 10**32;
+// console.log( data );
 
-catchAsync( async ( req, res, next ) => {
-	if(!false) throw new Error('message')
-	console.log( req, res, next )
-}) ('a', 'b', 'c')
+(async () => {
 
+	const randomValue = crypto.randomBytes(32).toString('hex');
+	const hashed = crypto.createHash('sha256').update(randomValue).digest('hex');
+	// const hashed = await bcrypt.hash(randomValue, 2)
+	console.log( {randomValue, hashed} )
 
+	// const verify = await bcrypt.compare(randomValue, hashed)
+	// console.log( verify )
 
+})()
 
-
-
-
-// const func = async () => {
-// 	throw 'my data not found error'	
-// };
-
-// func().then(console.log).catch(console.log);
-
-
-// ( async () => {
-// 	try {
-// 		const data = await func()
-// 	} catch (err) {
-// 		console.log( err)
-// 	}
-// }) ();
