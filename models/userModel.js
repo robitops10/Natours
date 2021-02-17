@@ -32,6 +32,7 @@ const userSchema = new mongoose.Schema({
 			message: 'password is not matched'
 		}
 	},
+	currentPassword: String,
 	photo: {
 		type: String,
 	},
@@ -42,7 +43,12 @@ const userSchema = new mongoose.Schema({
 		default: 'user'
 	},
 	passwordResetToken : String,
-	passwordResetExpires: Date
+	passwordResetExpires: Date,
+	active: { 													// when delete user, actually we don't delete it, insted inactive
+		type: Boolean,
+		default: true,
+		select: false 										// Don't want to show this features, so that user can know.
+	}
 
 });
 
@@ -55,6 +61,18 @@ userSchema.pre('save', async function (next) {
 
 	next();
 });
+
+// if user is inactive, then hide user to get from find
+userSchema.pre(/^find/, function(next) {
+	this.find({active : {$ne: false} }); 				// it is MongoDB's method, not mongoose's method, so no need await
+	next();
+});
+
+
+
+
+
+
 
 
 userSchema.methods.verifyPassword = async (password, hashedPassword) => {

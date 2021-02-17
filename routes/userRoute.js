@@ -11,6 +11,9 @@ router.post('/login', authController.login );
 
 router.post('/forgotPassword', authController.forgotPassword );
 router.patch('/resetPassword/:token', authController.resetPassword );
+router.patch('/updateMyPassword', authController.protect, authController.updateMyPassword );
+router.patch('/updateMe', authController.protect, userController.updateMe );
+router.delete('/deleteMe', authController.protect, userController.deleteMe );
 
 
 
@@ -18,11 +21,12 @@ router.patch('/resetPassword/:token', authController.resetPassword );
 router.route('/')
 	.get(userController.getAllUsers)
 
-router.route('/me').get(authController.protect, userController.me); 		// must be before /:id = else throw error
+router.route('/me').get(authController.protect, userController.getMe); 		// must be before /:id = else throw error
 
 router.route('/:id')
 	.get(userController.getUserById)
 	.delete(authController.protect, authController.restrictTo('admin', 'lead-guide'), userController.deleteUserById)
+	// .get(userController.deleteUserById)
 
 
 

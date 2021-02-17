@@ -11,17 +11,36 @@ const crypto = require('crypto');
 // we can used this token on schema as hook, and save into database too, which used to logout
 const signToken = id => jwt.sign( {id}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRES_IN} );
 
+const sendTokenWithResponse = (user, statusCode, res) => {
+	const token = signToken( user.id );
+
+	// setup cookie
+	const cookieOptions = { 	 						// 								N							sec 	min 	hrs Day
+		expires: new Date( Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 1000 * 60 * 60 * 24 ),
+		httpOnly: true 											// Only accessable via http Request, not by user manually
+		// secure: true, 										// Only HTTPS
+	};
+	if( process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+	res.cookie('jwt', token, cookieOptions);
+
+
+
+	user.password = undefined; 						// don't show user.password even from view from req.body.password
+	res.status(statusCode).json({
+		status: 'success',
+		token,
+		data: { user }
+	});
+};
+
+
+// problem: signup not add token, why ?
 exports.signup = catchAsync( async (req, res, next) => {
 	const { name, email, password, confirmPassword, role } = req.body;
 
 	const user = await User.create({ name, email, password, confirmPassword, role });
-	const token = signToken( user.id );
-
-	res.status(201).json({
-		status: 'success',
-		token,
-		data: { user }
-	})
+	sendTokenWithResponse( user, 201, res);
 });
 
 
@@ -40,12 +59,7 @@ exports.login = catchAsync( async (req, res, next) => {
 	if( !user || !verified) return next(new AppError('Incorrect email or password', 401) );
 
 	// 3) if every thing is ok, then send token to client
-	const token = signToken( user.id );
-
-	res.status(200).json({
-		status: 'success',
-		token
-	});
+	sendTokenWithResponse( user, 200, res);
 });
 
 
@@ -144,13 +158,25 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 	await user.save();
 
 	// 4) sent JWT to login
-	const token = signToken(user.id)
-
-
-	res.status(200).json({
-		status: 'success',
-		token,
-		user
-	});
+	sendTokenWithResponse( user, 200, res);
 });
 
+
+
+exports.updateMyPassword = catchAsync(async (req, res, next) => {
+	// 1) get user from collection  (get user.id from loged in user)
+	const user = await User.findById(req.user.id).select('+password');
+
+	// 2) check posted password is correct
+	const isVerified = await user.verifyPassword(req.body.currentPassword, user.password);
+	if(!isVerified) return next( new AppError('Sorry, your password is wrong', 401));
+
+	// 3) update password
+	user.password = req.body.password;
+	user.confirmPassword = req.body.confirmPassword;
+	user.passwordChangedAt = Date.now();
+	await user.save();
+
+	// 4) add jwt token to login
+	sendTokenWithResponse( user, 201, res);
+});

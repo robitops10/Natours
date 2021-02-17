@@ -1,14 +1,25 @@
 use natours
-db
-show collections
-// db.tours.find()
-db.users.find().pretty()
-// db.users.drop()
+// db
+// show collections
+
 // db.dropDatabase()
 
-// db.tours.findOne();
+// db.tours.drop()
+// db.tours.find().limit(1).pretty()
+// db.tours.find().pretty()
 
-// db.tours.find({
-// 	duration: { '$gt' : 5},
+// db.users.drop()
+// db.users.find().limit(1).pretty()
+// db.users.find().pretty()
 
-// }).count()
+// db.users.find({password: {$gt: ''}}).pretty()
+
+
+
+// db.reviews.drop()
+db.reviews.find().limit(1).pretty()
+// db.reviews.find().pretty()
+
+
+
+
